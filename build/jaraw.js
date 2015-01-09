@@ -40,6 +40,19 @@
       this.options = o;
     }
 
+    Jaraw.prototype.loginAs = function(type, cb) {
+      switch (type) {
+        case "script":
+          return this.loginAsScript(cb);
+        case "web":
+          return this.loginAsWeb(cb);
+        case "installed":
+          return this.loginAsInstalled(cb);
+        default:
+          throw new Error("incorrect login type");
+      }
+    };
+
     Jaraw.prototype.loginAsScript = function(cb) {
       var err, login, oauth, parseTokenRes, requestToken, res, ___iced_passed_deferral, __iced_deferrals, __iced_k;
       __iced_k = __iced_k_noop;
@@ -76,7 +89,7 @@
                   return res = arguments[2];
                 };
               })(),
-              lineno: 39
+              lineno: 46
             }));
             __iced_deferrals._fulfill();
           });
@@ -93,38 +106,31 @@
       };
       (function(_this) {
         return (function(__iced_k) {
-          if (!_this.auth) {
-            (function(__iced_k) {
-              __iced_deferrals = new iced.Deferrals(__iced_k, {
-                parent: ___iced_passed_deferral,
-                funcname: "Jaraw.loginAsScript"
-              });
-              requestToken(__iced_deferrals.defer({
-                assign_fn: (function() {
-                  return function() {
-                    err = arguments[0];
-                    return res = arguments[1];
-                  };
-                })(),
-                lineno: 46
-              }));
-              __iced_deferrals._fulfill();
-            })(function() {
-              return __iced_k(_this.auth = parseTokenRes(res));
-            });
-          } else {
-            return __iced_k();
-          }
+          __iced_deferrals = new iced.Deferrals(__iced_k, {
+            parent: ___iced_passed_deferral,
+            funcname: "Jaraw.loginAsScript"
+          });
+          requestToken(__iced_deferrals.defer({
+            assign_fn: (function() {
+              return function() {
+                err = arguments[0];
+                return res = arguments[1];
+              };
+            })(),
+            lineno: 52
+          }));
+          __iced_deferrals._fulfill();
         });
       })(this)((function(_this) {
         return function() {
+          _this.auth = parseTokenRes(res);
           return cb(_this.auth);
         };
       })(this));
     };
 
     Jaraw.prototype._call = function(method, endpt, opts, cb) {
-      var doCall, err, me, res, t, url, ___iced_passed_deferral, __iced_deferrals, __iced_k;
+      var auth, body, doCall, err, me, res, t, url, ___iced_passed_deferral, __iced_deferrals, __iced_k;
       __iced_k = __iced_k_noop;
       ___iced_passed_deferral = iced.findDeferral(arguments);
       t = Date.now() - this.next_call;
@@ -137,7 +143,7 @@
                 funcname: "Jaraw._call"
               });
               setTimeout(__iced_deferrals.defer({
-                lineno: 52
+                lineno: 58
               }), t);
               __iced_deferrals._fulfill();
             })(__iced_k);
@@ -158,13 +164,13 @@
           if (_this.options.type === "anon") {
             url = "https://www.reddit.com";
           }
-          if (_this.auth) {
+          if (_this.options.oauth) {
             url = "https://oauth.reddit.com";
           }
           url += endpt;
           me = _this;
           doCall = function(cb) {
-            var err, headers, inc, res, ___iced_passed_deferral1, __iced_deferrals, __iced_k;
+            var body, err, headers, res, ___iced_passed_deferral1, __iced_deferrals, __iced_k;
             __iced_k = __iced_k_noop;
             ___iced_passed_deferral1 = iced.findDeferral(arguments);
             opts.url = url;
@@ -184,17 +190,17 @@
                   assign_fn: (function() {
                     return function() {
                       err = arguments[0];
-                      inc = arguments[1];
-                      return res = arguments[2];
+                      res = arguments[1];
+                      return body = arguments[2];
                     };
                   })(),
-                  lineno: 70
+                  lineno: 76
                 }));
                 __iced_deferrals._fulfill();
               });
             })(this)((function(_this) {
               return function() {
-                return cb(err, res);
+                return cb(err, res, body);
               };
             })(this));
           };
@@ -207,17 +213,58 @@
               assign_fn: (function() {
                 return function() {
                   err = arguments[0];
-                  return res = arguments[1];
+                  res = arguments[1];
+                  return body = arguments[2];
                 };
               })(),
-              lineno: 73
+              lineno: 79
             }));
             __iced_deferrals._fulfill();
           })(function() {
-            if (!err) {
-              _this.next_call = Date.now() + _this.options.rate_limit;
-            }
-            return cb(err, res);
+            (function(__iced_k) {
+              var _ref;
+              if ((_ref = res.statusCode) === 401 || _ref === 403) {
+                (function(__iced_k) {
+                  __iced_deferrals = new iced.Deferrals(__iced_k, {
+                    parent: ___iced_passed_deferral,
+                    funcname: "Jaraw._call"
+                  });
+                  _this.loginAs(_this.options.type, __iced_deferrals.defer({
+                    assign_fn: (function() {
+                      return function() {
+                        return auth = arguments[0];
+                      };
+                    })(),
+                    lineno: 82
+                  }));
+                  __iced_deferrals._fulfill();
+                })(function() {
+                  (function(__iced_k) {
+                    __iced_deferrals = new iced.Deferrals(__iced_k, {
+                      parent: ___iced_passed_deferral,
+                      funcname: "Jaraw._call"
+                    });
+                    doCall(__iced_deferrals.defer({
+                      assign_fn: (function() {
+                        return function() {
+                          err = arguments[0];
+                          res = arguments[1];
+                          return body = arguments[2];
+                        };
+                      })(),
+                      lineno: 83
+                    }));
+                    __iced_deferrals._fulfill();
+                  })(function() {
+                    return __iced_k(!err ? _this.next_call = Date.now() + _this.options.rate_limit : void 0);
+                  });
+                });
+              } else {
+                return __iced_k();
+              }
+            })(function() {
+              return cb(err, res, body);
+            });
           });
         };
       })(this));
@@ -279,8 +326,8 @@
     },
     isHTTPMethod: function(m) {
       var _ref;
-      if ((_ref = m.toLowerCase()) !== "get" && _ref !== "post") {
-        throw new Error("must be a GET or POST request");
+      if ((_ref = m.toLowerCase()) !== "get" && _ref !== "post" && _ref !== "patch" && _ref !== "put") {
+        throw new Error("must be a GET, POST, PATCH or PUT request");
       }
     },
     hasValidAuth: function(auth) {
@@ -288,7 +335,7 @@
         throw new Error("you don't have an access token");
       }
     },
-    _isProperString: function(str, msg1, msg2) {
+    isProperString: function(str, msg1, msg2) {
       if (typeof str !== 'string') {
         throw new Error(msg1);
       }
@@ -297,7 +344,7 @@
       }
     },
     isUserAgent: function(str) {
-      return val._isProperString(str, "must provide a user agent", "user agent must not be empty");
+      return val.isProperString(str, "must provide a user agent", "user agent must not be empty");
     }
   };
 
