@@ -1,0 +1,5 @@
+src/
+tests/
+Gruntfile.coffee
+coffeelint.json
+.travis.yml

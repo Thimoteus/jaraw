@@ -3,10 +3,14 @@
   "version": "0.1.2-alpha1",
   "description": "Just another reddit API wrapper",
   "author": "Thimoteus",
+  "license": "WTFPL",
   "repository": {
     "type": "git",
     "url": "github.com:Thimoteus/jaraw.git"
   },
+  "keywords": ["reddit", "api", "wrapper"],
+  "files": ["build/"],
+  "main": "build/jaraw.min.js",
   "dependencies": {
     "request": "^2.51.0"
   },
@@ -24,6 +28,6 @@
   },
   "scripts": {
     "test": "grunt mochaTest:tests",
-    "prepublish": "grunt"
+    "prepublish": "grunt build"
   }
 }

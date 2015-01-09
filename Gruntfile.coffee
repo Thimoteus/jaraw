@@ -45,3 +45,4 @@ module.exports = (grunt) ->
                'build/jaraw.min.js': ['build/jaraw.js']
 
    grunt.registerTask 'default', ['coffeelint', 'mochaTest:tests', 'coffee', 'uglify']
+   grunt.registerTask 'build', ['default']

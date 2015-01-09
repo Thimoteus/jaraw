@@ -46,3 +46,10 @@ Run `grunt` to create `jaraw.js` and `jaraw.min.js` in the `build` folder. Alter
 By default, running the above command won't run tests that actually make requests to reddit's servers.
 
 To run those, use `grunt mochaTest:integration`. Warning: You may need to adjust `timeout` in the gruntfile.
+
+# LICENSE
+
+Copyright © 2015 Thimoteus
+This work is free. You can redistribute it and/or modify it under the
+terms of the Do What The Fuck You Want To Public License, Version 2,
+as published by Sam Hocevar. See the LICENSE file for more details
