@@ -1,19 +1,23 @@
 {
-  "name": "JARAW",
-  "version": "0.1.2-alpha",
-  "description": "Just another reddit API wrapper",
-  "author": "Thimoteus",
-  "dependencies": {
-    "request": "^2.51.0"
-  },
-  "devDependencies": {
-    "chai": "*",
-    "grunt": "^0.4.5",
-    "grunt-coffeelint": "0.0.13",
-    "grunt-contrib-uglify": "^0.7.0",
-    "grunt-contrib-watch": "^0.6.1",
-    "grunt-iced-coffee": "^0.7.0-a",
-    "grunt-mocha-test": "^0.12.4",
-    "mocha": "*"
-  }
+   "name": "JARAW",
+   "version": "0.1.2-alpha",
+   "description": "Just another reddit API wrapper",
+   "author": "Thimoteus",
+   "dependencies": {
+      "request": "^2.51.0"
+   },
+   "devDependencies": {
+      "chai": "*",
+      "grunt": "^0.4.5",
+      "grunt-coffeelint": "0.0.13",
+      "grunt-contrib-uglify": "^0.7.0",
+      "grunt-contrib-watch": "^0.6.1",
+      "grunt-iced-coffee": "^0.7.0-a",
+      "grunt-mocha-test": "^0.12.4",
+      "mocha": "*"
+   },
+   "scripts": {
+      "test": "grunt mochaTest:tests",
+      "prepublish": "grunt"
+   }
 }

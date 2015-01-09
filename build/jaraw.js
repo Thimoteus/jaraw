@@ -35,6 +35,12 @@
       }
       if (!("rate_limit" in o)) {
         o.rate_limit = 2000;
+      } else if (o.rate_limit < 2000) {
+        if (o.type === "anon") {
+          o.rate_limit = 2000;
+        } else if (o.rate_limit < 1000) {
+          o.rate_limit = 1000;
+        }
       }
       this.next_call = Date.now() + o.rate_limit;
       this.options = o;
@@ -89,7 +95,7 @@
                   return res = arguments[2];
                 };
               })(),
-              lineno: 46
+              lineno: 53
             }));
             __iced_deferrals._fulfill();
           });
@@ -117,7 +123,7 @@
                 return res = arguments[1];
               };
             })(),
-            lineno: 52
+            lineno: 59
           }));
           __iced_deferrals._fulfill();
         });
@@ -143,7 +149,7 @@
                 funcname: "Jaraw._call"
               });
               setTimeout(__iced_deferrals.defer({
-                lineno: 58
+                lineno: 65
               }), t);
               __iced_deferrals._fulfill();
             })(__iced_k);
@@ -194,7 +200,7 @@
                       return body = arguments[2];
                     };
                   })(),
-                  lineno: 76
+                  lineno: 83
                 }));
                 __iced_deferrals._fulfill();
               });
@@ -217,7 +223,7 @@
                   return body = arguments[2];
                 };
               })(),
-              lineno: 79
+              lineno: 86
             }));
             __iced_deferrals._fulfill();
           })(function() {
@@ -235,7 +241,7 @@
                         return auth = arguments[0];
                       };
                     })(),
-                    lineno: 82
+                    lineno: 89
                   }));
                   __iced_deferrals._fulfill();
                 })(function() {
@@ -252,7 +258,7 @@
                           return body = arguments[2];
                         };
                       })(),
-                      lineno: 83
+                      lineno: 90
                     }));
                     __iced_deferrals._fulfill();
                   })(function() {
