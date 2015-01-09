@@ -14,7 +14,16 @@ describe "constructor", ->
    it "should throw an error with an empty user agent", ->
       assert.throws (-> new Jaraw ""), "user agent must not be empty"
 
+
    describe "anonymous usage", ->
+
+      it "should have a rate_limit of 2000 when used anonymously", ->
+         o =
+            type: 'anon'
+            rate_limit: 1000
+            user_agent: 'user agent'
+         reddit = new Jaraw o
+         assert.equal reddit.options.rate_limit, 2000
 
       it "should throw no error with anonymous usage", ->
          assert.doesNotThrow -> new Jaraw "user agent"
@@ -24,6 +33,20 @@ describe "constructor", ->
          assert.deepPropertyVal reddit, "options.type", "anon"
 
    describe "script login", ->
+
+      it "should have a rate_limit of no less than 1000", ->
+         o =
+            type: 'script'
+            login:
+               username: "foo"
+               password: "bar"
+            oauth:
+               id: "123"
+               secret: "abc"
+            user_agent: "user agent"
+            rate_limit: 999
+         reddit = new Jaraw o
+         assert.equal reddit.options.rate_limit, 1000
 
       it "should throw an error if type is wrong", ->
          o = type: 'foo'
@@ -44,18 +67,6 @@ describe "constructor", ->
             user_agent: "stuff"
          assert.throws (-> new Jaraw o), "must provide client ID and secret"
 
-      it "should throw no error if options make sense", ->
-         o =
-            type: 'script'
-            login:
-               username: "foo"
-               password: "bar"
-            oauth:
-               id: "123"
-               secret: "abc"
-            user_agent: "user agent"
-         assert.doesNotThrow -> new Jaraw o
-
       it "should throw an error if the user_agent is empty", ->
          o =
             type: 'script'
@@ -67,3 +78,15 @@ describe "constructor", ->
                secret: "abc"
             user_agent: ""
          assert.throws (-> new Jaraw o), "need a custom user agent"
+
+      it "should throw no error if options make sense", ->
+         o =
+            type: 'script'
+            login:
+               username: "foo"
+               password: "bar"
+            oauth:
+               id: "123"
+               secret: "abc"
+            user_agent: "user agent"
+         assert.doesNotThrow -> new Jaraw o

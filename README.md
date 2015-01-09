@@ -1,4 +1,4 @@
-# JARAW - just another reddit api wrapper
+# JARAW - just another reddit api wrapper ![dependencies](https://img.shields.io/david/Thimoteus/jaraw.svg) ![devDependencies](https://img.shields.io/david/dev/Thimoteus/jaraw.svg)
 
 So far it only supports bots/personal scripts. Hopefully more options will come.
 

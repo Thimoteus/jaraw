@@ -23,7 +23,7 @@ module.exports = (grunt) ->
             options:
                reporter: 'spec'
                require: 'iced-coffee-script/register'
-            src: ['tests/constructor.iced', 'tests/validations.iced']
+            src: ['tests/validations.iced', 'tests/constructor.iced']
 
          integration:
             options:

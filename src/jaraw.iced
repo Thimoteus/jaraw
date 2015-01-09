@@ -19,7 +19,14 @@ class Jaraw
          when "web" then val.isWebApp(o)
          when "installed" then val.isInstalledApp(o)
 
-      if "rate_limit" not of o then o.rate_limit = 2000
+      if "rate_limit" not of o
+         o.rate_limit = 2000
+      else if o.rate_limit < 2000
+         if o.type is "anon"
+            o.rate_limit = 2000
+         else if o.rate_limit < 1000
+            o.rate_limit = 1000
+            
       @next_call = Date.now() + o.rate_limit
       @options = o
 
