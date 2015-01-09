@@ -14,7 +14,7 @@ module.exports = (grunt) ->
 
       coffeelint:
          options:
-            configFile: '../coffeelint.json'
+            configFile: './coffeelint.json'
          src: ['src/*.iced']
          tests: ['tests/*.iced']
 

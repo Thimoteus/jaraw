@@ -3,6 +3,10 @@
    "version": "0.1.2-alpha",
    "description": "Just another reddit API wrapper",
    "author": "Thimoteus",
+   "repository": {
+      "type": "git",
+      "url": "github.com:Thimoteus/jaraw.git"
+   },
    "dependencies": {
       "request": "^2.51.0"
    },
