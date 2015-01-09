@@ -3,6 +3,8 @@
 So far it only supports bots/personal scripts. Hopefully more options will come.
 
 ## Usage
+
+```coffee
     Jaraw = require './src/jaraw'
     options =
       type: 'script'
@@ -17,11 +19,14 @@ So far it only supports bots/personal scripts. Hopefully more options will come.
     reddit = new Jaraw options
     reddit.loginAsScript ->
       reddit.get('/api/v1/me', doStuff)
+```
 
 Anonymous usage:
 
+```coffee
     reddit = new Jaraw "custom useragent"
     reddit.get('/r/all', doStuff)
+```
 
 You should probably `npm install` first. If you're not using it anonymously, you can add a "rate_limit" property to the `options` object that can be as low as `1000`. By default, it is `2000`.
 
