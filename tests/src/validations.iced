@@ -1,6 +1,6 @@
 assert = require('chai').assert
-Jaraw = require '../src/jaraw'
-val = require '../src/validate'
+Jaraw = require '../../src/jaraw'
+val = require '../../src/validate'
 
 describe 'val', ->
 

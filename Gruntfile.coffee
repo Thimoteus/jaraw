@@ -15,7 +15,7 @@ module.exports = (grunt) ->
          options:
             configFile: './coffeelint.json'
          src: ['src/*.iced']
-         tests: ['tests/*.iced']
+         tests: ['tests/**/*.iced']
 
       mochaTest:
          options:
@@ -23,16 +23,16 @@ module.exports = (grunt) ->
          tests:
             options:
                require: 'iced-coffee-script/register'
-            src: ['tests/validations.iced', 'tests/constructor.iced']
+            src: ['tests/src/validations.iced', 'tests/src/constructor.iced']
 
          integration:
             options:
                require: 'iced-coffee-script/register'
                timeout: 5000
-            src: ['tests/integration.iced']
+            src: ['tests/src/integration.iced', 'tests/build/integration.iced']
 
          built:
-            src: ['tests/built.iced']
+            src: ['tests/build/built.iced']
 
       coffee:
          glob_to_multiple:

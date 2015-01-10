@@ -12,9 +12,10 @@ module.exports =
   user_agent: 'custom useragent'
 ###
 
-Jaraw = require '../src/jaraw'
 assert = require('chai').assert
-options = require './private'
+options = require '../private'
+Jaraw = require '../../src/jaraw'
+
 
 describe "login", ->
    reddit = new Jaraw options

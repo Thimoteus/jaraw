@@ -1,5 +1,4 @@
 request = require 'request'
-qs = require 'querystring'
 val = require './validate'
 
 class Jaraw

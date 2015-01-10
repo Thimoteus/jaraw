@@ -1,5 +1,5 @@
 assert = require('chai').assert
-Jaraw = require '../src/jaraw'
+Jaraw = require '../../src/jaraw'
 
 describe "constructor", ->
    types = ['script', 'web', 'installed', 'anon']
