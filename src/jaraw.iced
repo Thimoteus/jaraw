@@ -1,6 +1,8 @@
 request = require 'request'
 val = require './validate'
 
+identity = (x) -> x
+
 class Jaraw
 
    constructor: (o) ->
@@ -29,14 +31,14 @@ class Jaraw
       @next_call = Date.now() + o.rate_limit
       @options = o
 
-   loginAs: (type, cb) ->
+   loginAs: (type, cb = identity) ->
       switch type
          when "script" then @loginAsScript cb
          when "web" then @loginAsWeb cb
          when "installed" then @loginAsInstalled cb
          else throw new Error "incorrect login type"
 
-   loginAsScript: (cb) ->
+   loginAsScript: (cb = identity) ->
       login = @options.login
       oauth = @options.oauth
       requestToken = (cb) ->
@@ -61,7 +63,7 @@ class Jaraw
       @auth = parseTokenRes res
       cb @auth
 
-   _call: (method, endpt, params, cb) ->
+   call: (method, endpt, params, cb) ->
       t = Date.now() - @next_call
       if t < 0 then await setTimeout defer(), t
       val.isHTTPMethod method
@@ -96,9 +98,24 @@ class Jaraw
 
       cb err, res, body
 
-   get: (endpt, opts = {}, cb) -> @_call("get", endpt, opts, cb)
+   get: (endpt, params = {}, cb = identity) -> @call("get", endpt, params, cb)
 
-   post: (endpt, opts = {}, cb) -> @_call("post", endpt, opts, cb)
+   post: (endpt, params = {}, cb = identity) -> @call("post", endpt, params, cb)
+
+   logout: (cb = identity) ->
+      opts =
+         url: "https://ssl.reddit.com/api/v1/revoke_token"
+         method: "POST"
+         auth:
+            user: @options.oauth.id
+            pass: @options.oauth.secret
+         form:
+            token: @auth.access_token
+            token_type_hint: "access_token"
+      await request opts, defer err, res, inc
+      console.log "Logged out!"
+      cb err, res, inc
+
 
 
 module.exports = Jaraw

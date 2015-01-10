@@ -31,6 +31,14 @@ So far it only supports bots/personal scripts. Hopefully more options will come.
 
 You can add a "rate_limit" property to the `options` object that can be as low as `1000`. By default, it is `2000`.
 
+#### Logging out
+
+```coffee
+reddit.logout -> console.log "All logged out!"
+```
+
+Note: Due to the fact that refresh tokens are not given to personal scripts, using `reddit.get` or `reddit.post` after you've logged out will log you in again.
+
 ### Anonymous usage:
 
 ```coffee
