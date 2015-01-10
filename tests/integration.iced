@@ -35,7 +35,16 @@ describe "login", ->
 
    it 'should get a new access token if the old one doesnt work', (done) ->
       reddit.auth.access_token = 'jibberjabber'
-      reddit.get '/r/all', (err, res) ->
+      reddit.get '/r/all', (err, res, body) ->
          throw err if err
          assert.deepPropertyNotVal reddit, 'auth.access_token', 'jibberjabber'
+         done()
+
+describe "anonymous", ->
+   reddit = new Jaraw "jaraw testing"
+
+   it "should receive a response", (done) ->
+      reddit.get '/r/all.json', (err, res, body) ->
+         throw err if err
+         assert.property res, "statusCode"
          done()

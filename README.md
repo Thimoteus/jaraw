@@ -29,14 +29,14 @@ Anonymous usage:
 
 ```coffee
     reddit = new Jaraw "custom useragent"
-    reddit.get('/r/all', doStuff)
+    reddit.get('/r/all.json', doStuff)
 ```
 
 You should probably `npm install` first. If you're not using it anonymously, you can add a "rate_limit" property to the `options` object that can be as low as `1000`. By default, it is `2000`.
 
 ## Building
 
-Run `grunt` to create `jaraw.js` and `jaraw.min.js` in the `build` folder. Alternatively, you can do each of these individually:
+Run `grunt` to create `jaraw.js` in the `build` folder. Alternatively, you can do each of these individually:
 
     grunt coffeelint
     grunt mochaTest:tests

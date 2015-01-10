@@ -18,18 +18,21 @@ module.exports = (grunt) ->
          tests: ['tests/*.iced']
 
       mochaTest:
+         options:
+            reporter: 'spec'
          tests:
             options:
-               reporter: 'spec'
                require: 'iced-coffee-script/register'
             src: ['tests/validations.iced', 'tests/constructor.iced']
 
          integration:
             options:
-               reporter: 'spec'
                require: 'iced-coffee-script/register'
-               timeout: 3000
-            src: ['tests/login.iced']
+               timeout: 5000
+            src: ['tests/integration.iced']
+
+         built:
+            src: ['tests/built.iced']
 
       coffee:
          glob_to_multiple:
@@ -48,9 +51,10 @@ module.exports = (grunt) ->
                   cwd: 'build'
                   src: '**/*.js'
                   dest: 'build'
-                  ext: '.min.js'
+                  ext: '.js'
                }]
 
-   grunt.registerTask 'default', ['validate', 'build']
+   grunt.registerTask 'default', ['validateSrc', 'build', 'validateBuild']
    grunt.registerTask 'build', ['coffee', 'uglify']
-   grunt.registerTask 'validate', ['coffeelint', 'mochaTest:tests']
+   grunt.registerTask 'validateSrc', ['coffeelint', 'mochaTest:tests']
+   grunt.registerTask 'validateBuild', ['mochaTest:built']
