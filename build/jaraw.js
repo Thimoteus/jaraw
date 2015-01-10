@@ -1,6 +1,5 @@
 (function() {
-  var Jaraw, iced, qs, request, val, __iced_k, __iced_k_noop,
-    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+  var Jaraw, iced, qs, request, val, __iced_k, __iced_k_noop;
 
   iced = require('iced-runtime');
   __iced_k = __iced_k_noop = function() {};
@@ -85,7 +84,8 @@
         (function(_this) {
           return (function(__iced_k) {
             __iced_deferrals = new iced.Deferrals(__iced_k, {
-              parent: ___iced_passed_deferral1
+              parent: ___iced_passed_deferral1,
+              filename: "src/jaraw.iced"
             });
             request(opts, __iced_deferrals.defer({
               assign_fn: (function() {
@@ -114,6 +114,7 @@
         return (function(__iced_k) {
           __iced_deferrals = new iced.Deferrals(__iced_k, {
             parent: ___iced_passed_deferral,
+            filename: "src/jaraw.iced",
             funcname: "Jaraw.loginAsScript"
           });
           requestToken(__iced_deferrals.defer({
@@ -146,6 +147,7 @@
             (function(__iced_k) {
               __iced_deferrals = new iced.Deferrals(__iced_k, {
                 parent: ___iced_passed_deferral,
+                filename: "src/jaraw.iced",
                 funcname: "Jaraw._call"
               });
               setTimeout(__iced_deferrals.defer({
@@ -190,7 +192,8 @@
             (function(_this) {
               return (function(__iced_k) {
                 __iced_deferrals = new iced.Deferrals(__iced_k, {
-                  parent: ___iced_passed_deferral1
+                  parent: ___iced_passed_deferral1,
+                  filename: "src/jaraw.iced"
                 });
                 request[method.toLowerCase()](opts, __iced_deferrals.defer({
                   assign_fn: (function() {
@@ -213,6 +216,7 @@
           (function(__iced_k) {
             __iced_deferrals = new iced.Deferrals(__iced_k, {
               parent: ___iced_passed_deferral,
+              filename: "src/jaraw.iced",
               funcname: "Jaraw._call"
             });
             doCall(__iced_deferrals.defer({
@@ -233,6 +237,7 @@
                 (function(__iced_k) {
                   __iced_deferrals = new iced.Deferrals(__iced_k, {
                     parent: ___iced_passed_deferral,
+                    filename: "src/jaraw.iced",
                     funcname: "Jaraw._call"
                   });
                   _this.loginAs(_this.options.type, __iced_deferrals.defer({
@@ -248,6 +253,7 @@
                   (function(__iced_k) {
                     __iced_deferrals = new iced.Deferrals(__iced_k, {
                       parent: ___iced_passed_deferral,
+                      filename: "src/jaraw.iced",
                       funcname: "Jaraw._call"
                     });
                     doCall(__iced_deferrals.defer({
@@ -295,65 +301,5 @@
   })();
 
   module.exports = Jaraw;
-
-  val = {
-    isOptions: function(o) {
-      var types, _ref;
-      if (o.type == null) {
-        throw new Error("type must be defined");
-      }
-      types = ['script', 'web', 'installed', 'anon'];
-      if (_ref = o.type, __indexOf.call(types, _ref) < 0) {
-        throw new Error("type must be one of " + (types.join(', ')));
-      }
-    },
-    isScript: function(o) {
-      var _ref, _ref1, _ref2, _ref3;
-      if (!(((_ref = o.login) != null ? _ref.username : void 0) || ((_ref1 = o.login) != null ? _ref1.password : void 0))) {
-        throw new Error("must provide username and password");
-      }
-      if (!(((_ref2 = o.oauth) != null ? _ref2.id : void 0) || ((_ref3 = o.oauth) != null ? _ref3.secret : void 0))) {
-        throw new Error("must provide client ID and secret");
-      }
-    },
-    isWebApp: function(o) {
-      return val.isOptions(o);
-    },
-    isInstalledApp: function(o) {
-      return val.isOptions(o);
-    },
-    hasUserAgent: function(o) {
-      if (o.user_agent == null) {
-        throw new Error("need to define a user agent");
-      }
-      if (o.user_agent.length === 0) {
-        throw new Error("need a custom user agent");
-      }
-    },
-    isHTTPMethod: function(m) {
-      var _ref;
-      if ((_ref = m.toLowerCase()) !== "get" && _ref !== "post" && _ref !== "patch" && _ref !== "put") {
-        throw new Error("must be a GET, POST, PATCH or PUT request");
-      }
-    },
-    hasValidAuth: function(auth) {
-      if (!("access_token" in auth)) {
-        throw new Error("you don't have an access token");
-      }
-    },
-    isProperString: function(str, msg1, msg2) {
-      if (typeof str !== 'string') {
-        throw new Error(msg1);
-      }
-      if (str.length === 0) {
-        throw new Error(msg2);
-      }
-    },
-    isUserAgent: function(str) {
-      return val.isProperString(str, "must provide a user agent", "user agent must not be empty");
-    }
-  };
-
-  module.exports = val;
 
 }).call(this);

@@ -2,6 +2,10 @@
 
 So far it only supports bots/personal scripts. Hopefully more options will come.
 
+## Installation
+
+`npm install jaraw`
+
 ## Usage
 
 ```coffee

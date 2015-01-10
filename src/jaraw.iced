@@ -26,7 +26,7 @@ class Jaraw
             o.rate_limit = 2000
          else if o.rate_limit < 1000
             o.rate_limit = 1000
-            
+
       @next_call = Date.now() + o.rate_limit
       @options = o
 

@@ -3,7 +3,6 @@
 module.exports = (grunt) ->
 
    grunt.loadNpmTasks 'grunt-mocha-test'
-   grunt.loadNpmTasks 'grunt-contrib-watch'
    grunt.loadNpmTasks 'grunt-coffeelint'
    grunt.loadNpmTasks 'grunt-contrib-uglify'
    grunt.loadNpmTasks 'grunt-iced-coffee'
@@ -33,16 +32,25 @@ module.exports = (grunt) ->
             src: ['tests/login.iced']
 
       coffee:
-         compile:
-            options:
-               join: true
-            files:
-               'build/jaraw.js': ['src/*.iced']
+         glob_to_multiple:
+            expand: true
+            flatten: true
+            cwd: 'src'
+            src: ['*.iced']
+            dest: 'build'
+            ext: '.js'
 
       uglify:
          jaraw:
             files:
-               'build/jaraw.min.js': ['build/jaraw.js']
+               [{
+                  expand: true
+                  cwd: 'build'
+                  src: '**/*.js'
+                  dest: 'build'
+                  ext: '.min.js'
+               }]
 
-   grunt.registerTask 'default', ['coffeelint', 'mochaTest:tests', 'coffee', 'uglify']
-   grunt.registerTask 'build', ['default']
+   grunt.registerTask 'default', ['validate', 'build']
+   grunt.registerTask 'build', ['coffee', 'uglify']
+   grunt.registerTask 'validate', ['coffeelint', 'mochaTest:tests']
