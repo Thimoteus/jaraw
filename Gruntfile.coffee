@@ -1,5 +1,3 @@
-# mocha tests --compilers iced:iced-coffee-script/register
-
 module.exports = (grunt) ->
 
    grunt.loadNpmTasks 'grunt-mocha-test'
@@ -45,6 +43,9 @@ module.exports = (grunt) ->
 
       uglify:
          jaraw:
+            options:
+               mangle:
+                  except: ["Jaraw"]
             files:
                [{
                   expand: true
