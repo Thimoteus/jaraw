@@ -41,24 +41,25 @@ class Jaraw
    loginAsScript: (cb = identity) ->
       login = @options.login
       oauth = @options.oauth
-      requestToken = (cb) ->
-         params =
-            grant_type: "password"
-            username: login.username
-            password: login.password
+      requestToken = (callback) ->
          opts =
             url: "https://ssl.reddit.com/api/v1/access_token"
             method: "POST"
-            form: params
+            form:
+               grant_type: 'password'
+               username: login.username
+               password: login.password
             auth:
                user: oauth.id
                pass: oauth.secret
          await request opts, defer err, inc, res
-         cb err, res
+         callback err, res
+
       parseTokenRes = (res) ->
          res = JSON.parse res
          res.expires_in = Date.now().valueOf() + 1000*res.expires_in
          res
+
       await requestToken defer err, res
       @auth = parseTokenRes res
       cb @auth
@@ -80,18 +81,17 @@ class Jaraw
       opts.url = if @options.oauth then "https://oauth.reddit.com" else "https://www.reddit.com"
       opts.url += endpt
 
-      me = this
-      doCall = (cb) =>
+      doCall = (callback) =>
          headers =
             "User-Agent": @options.user_agent
          if @auth then headers.Authorization = "bearer #{@auth.access_token}"
          opts.headers = headers
          await request[method.toLowerCase()] opts, defer err, res, body
-         cb err, res, body
+         callback err, res, body
 
       await doCall defer err, res, body
 
-      if res.statusCode in [401, 403]
+      if res?.statusCode in [401, 403]
          await @loginAs @options.type, defer auth
          await doCall defer err, res, body
          if not err then @next_call = Date.now() + @options.rate_limit

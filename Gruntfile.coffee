@@ -2,8 +2,8 @@ module.exports = (grunt) ->
 
    grunt.loadNpmTasks 'grunt-mocha-test'
    grunt.loadNpmTasks 'grunt-coffeelint'
-   grunt.loadNpmTasks 'grunt-contrib-uglify'
    grunt.loadNpmTasks 'grunt-iced-coffee'
+   grunt.loadNpmTasks 'grunt-contrib-uglify'
 
    grunt.initConfig
 
