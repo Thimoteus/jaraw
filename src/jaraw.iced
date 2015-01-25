@@ -61,7 +61,12 @@ class Jaraw
          res
 
       await requestToken defer err, res
-      @auth = parseTokenRes res
+      if res
+         @auth = parseTokenRes res
+      else
+         console.log "Login attempt failed, trying again in 2 seconds"
+         await setTimeout defer(), 2000
+         await loginAsScript defer()
       cb @auth
 
    call: (method, endpt, params, cb) ->
