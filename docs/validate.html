@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>validate.iced</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="jaraw.html">
+                jaraw.iced
+              </a>
+            
+              
+              <a class="source" href="validate.html">
+                validate.iced
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>validate.iced</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>validate =</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>checks for the type of app</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>   <span class="hljs-attribute">isOptions</span>: <span class="hljs-function"><span class="hljs-params">(o)</span> -&gt;</span>
+      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error <span class="hljs-string">"type must be defined"</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> o.type?
+      types = [<span class="hljs-string">'script'</span>, <span class="hljs-string">'web'</span>, <span class="hljs-string">'installed'</span>, <span class="hljs-string">'anon'</span>]
+      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error <span class="hljs-string">"type must be one of <span class="hljs-subst">#{types.join <span class="hljs-string">', '</span>}</span>"</span> <span class="hljs-keyword">if</span> o.type <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> types
+      <span class="hljs-literal">true</span>
+   <span class="hljs-attribute">isScript</span>: <span class="hljs-function"><span class="hljs-params">(o)</span> -&gt;</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>checks for username, password, client id and secret</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> (o.login?.username <span class="hljs-keyword">or</span> o.login?.password)
+         <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error <span class="hljs-string">"must provide username and password"</span>
+      <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> (o.oauth?.id <span class="hljs-keyword">or</span> o.oauth?.secret)
+         <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error <span class="hljs-string">"must provide client ID and secret"</span>
+      <span class="hljs-literal">true</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>web apps not supported yet</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>   <span class="hljs-attribute">isWebApp</span>: <span class="hljs-function"><span class="hljs-params">(o)</span> -&gt;</span> validate.isOptions(o)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>installed apps not supported yet</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>   <span class="hljs-attribute">isInstalledApp</span>: <span class="hljs-function"><span class="hljs-params">(o)</span> -&gt;</span> validate.isOptions(o)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>checks if a user agent was provided. For non-anonymous usage.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>   <span class="hljs-attribute">hasUserAgent</span>: <span class="hljs-function"><span class="hljs-params">(o)</span> -&gt;</span>
+      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error <span class="hljs-string">"need to define a user agent"</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> o.user_agent?
+      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error <span class="hljs-string">"need a custom user agent"</span> <span class="hljs-keyword">if</span> o.user_agent.length <span class="hljs-keyword">is</span> <span class="hljs-number">0</span>
+      <span class="hljs-literal">true</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>checks if a user agent was provided. For anonymous usage.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>   <span class="hljs-attribute">isUserAgent</span>: <span class="hljs-function"><span class="hljs-params">(str)</span> -&gt;</span>
+      validate.isProperString str, <span class="hljs-string">"must provide a user agent"</span>, <span class="hljs-string">"user agent must not be empty"</span>
+      <span class="hljs-literal">true</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>checks if the http method exists</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>   <span class="hljs-attribute">isHTTPMethod</span>: <span class="hljs-function"><span class="hljs-params">(m)</span> -&gt;</span>
+      <span class="hljs-keyword">if</span> m.toLowerCase() <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> [<span class="hljs-string">"get"</span>, <span class="hljs-string">"post"</span>, <span class="hljs-string">"patch"</span>, <span class="hljs-string">"put"</span>]
+         <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error <span class="hljs-string">"must be a GET, POST, PATCH or PUT request"</span>
+      <span class="hljs-literal">true</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>checks if there’s an access token</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>   <span class="hljs-attribute">hasValidAuth</span>: <span class="hljs-function"><span class="hljs-params">(auth)</span> -&gt;</span>
+      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error <span class="hljs-string">"you don't have an access token"</span> <span class="hljs-keyword">if</span> <span class="hljs-string">"access_token"</span> <span class="hljs-keyword">not</span> <span class="hljs-keyword">of</span> auth
+      <span class="hljs-literal">true</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>checks if input is a string with length &gt; 0</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>   <span class="hljs-attribute">isProperString</span>: <span class="hljs-function"><span class="hljs-params">(str, msg1, msg2)</span> -&gt;</span>
+      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error msg1 <span class="hljs-keyword">if</span> <span class="hljs-keyword">typeof</span> str <span class="hljs-keyword">isnt</span> <span class="hljs-string">'string'</span>
+      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error msg2 <span class="hljs-keyword">if</span> str.length <span class="hljs-keyword">is</span> <span class="hljs-number">0</span>
+      <span class="hljs-literal">true</span>
+
+<span class="hljs-built_in">module</span>.exports = validate</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
