@@ -11,22 +11,22 @@ So far it only supports bots/personal scripts. Hopefully more options will come.
 ### As a bot/personal script
 
 ```coffee
-    Jaraw = require 'jaraw'
+Jaraw = require 'jaraw'
 
-    options =
-      type: 'script'
-      login:
-        username: 'your username'
-        password: 'your password'
-      oauth:
-        id: 'client id'
-        secret: 'client secret'
-      user_agent: 'custom useragent'
+options =
+  type: 'script'
+  login:
+    username: 'your username'
+    password: 'your password'
+  oauth:
+    id: 'client id'
+    secret: 'client secret'
+  user_agent: 'custom useragent'
 
-    reddit = new Jaraw options
+reddit = new Jaraw options
 
-    reddit.loginAsScript ->
-      reddit.get '/api/v1/me', doStuff
+reddit.loginAsScript ->
+  reddit.get '/api/v1/me', doStuff
 ```
 
 You can add a "rate_limit" property to the `options` object that can be as low as `1000`. By default, it is `2000`.
@@ -42,21 +42,42 @@ Note: Due to the fact that refresh tokens are not given to personal scripts, usi
 ### Anonymous usage:
 
 ```coffee
-    reddit = new Jaraw "custom useragent"
-    reddit.get('/r/all.json', doStuff)
+reddit = new Jaraw "custom useragent"
+reddit.get('/r/all.json', doStuff)
+```
+
+### Example:
+
+Suppose you're looking at the reddit API's section on [submitting a new link](https://www.reddit.com/dev/api#POST_api_submit).
+
+The method is "POST", the endpoint is "/api/submit" and the oauth scope is "submit". (As of the most current version, the only way to use it is as a personal script, which uses all scopes.)
+
+Then we can do the following, after logging in:
+
+```coffee
+params =
+   api_type: 'json'
+   kind: 'self'
+   sr: 'test'
+   text: 'THIS IS A TEST! DO NOT UPVOTE!'
+   title: 'testing ... '
+
+reddit.post '/api/submit', params
 ```
 
 ## Building
-
-    $ npm install
-    $ grunt
+```bash
+$ npm install
+$ grunt
+```
 
 This creates `jaraw.js` in the build folder. Alternatively, you can do each of these individually:
-
-    grunt coffeelint
-    grunt mochaTest:tests
-    grunt coffee
-    grunt uglify
+```bash
+grunt coffeelint
+grunt mochaTest:tests
+grunt coffee
+grunt uglify
+```
 
 ### Running tests
 
