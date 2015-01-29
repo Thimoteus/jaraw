@@ -2,6 +2,7 @@ request = require 'request'
 val = require './validate'
 
 identity = (x) -> x
+map = (f, xs) -> (f x for x in xs)
 
 class Jaraw
 
@@ -107,6 +108,32 @@ class Jaraw
 
    post: (endpt, params = {}, cb = identity) -> @call("post", endpt, params, cb)
 
+   getListing: (endpt, params = {}, cb = identity) ->
+      simplifyListing = (x) -> map ((y) -> y.data), JSON.parse(x).data.children
+
+      await @get endpt, params, defer err, res, bod
+      cb err, res, simplifyListing bod
+
+   pm: (recipient, subj, msg, cb = identity) ->
+      if /\/u\//i.test recipient then recipient = recipient[3..]
+      
+      params =
+         api_type: 'json'
+         subject: subj
+         text: msg
+         to: recipient
+
+      @post 'api/compose', params, cb
+
+   replyTo: (dest, msg, cb = identity) ->
+
+      params =
+         api_type: 'json'
+         thing_id: dest
+         text: msg
+
+      @post '/api/comment', params, cb
+
    logout: (cb = identity) ->
       opts =
          url: "https://ssl.reddit.com/api/v1/revoke_token"
@@ -120,7 +147,5 @@ class Jaraw
       await request opts, defer err, res, inc
       console.log "Logged out!"
       cb err, res, inc
-
-
 
 module.exports = Jaraw
