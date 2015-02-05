@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>validate.iced</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          <h1>validate.iced</h1>
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="index.html">
+                    index.md
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="jaraw.html">
+                    jaraw.iced
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="validate.html">
+                    validate.iced
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        
+        
+          <div class='highlight'><pre>validate =</pre></div>
+        
+      
+        
+        <p>checks for the type of app</p>
+
+        
+          <div class='highlight'><pre>   <span class="hljs-attribute">isOptions</span>: <span class="hljs-function"><span class="hljs-params">(o)</span> -&gt;</span>
+      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error <span class="hljs-string">"type must be defined"</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> o.type?
+      types = [<span class="hljs-string">'script'</span>, <span class="hljs-string">'web'</span>, <span class="hljs-string">'installed'</span>, <span class="hljs-string">'anon'</span>]
+      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error <span class="hljs-string">"type must be one of <span class="hljs-subst">#{types.join <span class="hljs-string">', '</span>}</span>"</span> <span class="hljs-keyword">if</span> o.type <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> types
+      <span class="hljs-literal">true</span>
+   <span class="hljs-attribute">isScript</span>: <span class="hljs-function"><span class="hljs-params">(o)</span> -&gt;</span></pre></div>
+        
+      
+        
+        <p>checks for username, password, client id and secret</p>
+
+        
+          <div class='highlight'><pre>      <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> (o.login?.username <span class="hljs-keyword">or</span> o.login?.password)
+         <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error <span class="hljs-string">"must provide username and password"</span>
+      <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> (o.oauth?.id <span class="hljs-keyword">or</span> o.oauth?.secret)
+         <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error <span class="hljs-string">"must provide client ID and secret"</span>
+      <span class="hljs-literal">true</span></pre></div>
+        
+      
+        
+        <p>web apps not supported yet</p>
+
+        
+          <div class='highlight'><pre>   <span class="hljs-attribute">isWebApp</span>: <span class="hljs-function"><span class="hljs-params">(o)</span> -&gt;</span> validate.isOptions(o)</pre></div>
+        
+      
+        
+        <p>installed apps not supported yet</p>
+
+        
+          <div class='highlight'><pre>   <span class="hljs-attribute">isInstalledApp</span>: <span class="hljs-function"><span class="hljs-params">(o)</span> -&gt;</span> validate.isOptions(o)</pre></div>
+        
+      
+        
+        <p>checks if a user agent was provided. For non-anonymous usage.</p>
+
+        
+          <div class='highlight'><pre>   <span class="hljs-attribute">hasUserAgent</span>: <span class="hljs-function"><span class="hljs-params">(o)</span> -&gt;</span>
+      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error <span class="hljs-string">"need to define a user agent"</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> o.user_agent?
+      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error <span class="hljs-string">"need a custom user agent"</span> <span class="hljs-keyword">if</span> o.user_agent.length <span class="hljs-keyword">is</span> <span class="hljs-number">0</span>
+      <span class="hljs-literal">true</span></pre></div>
+        
+      
+        
+        <p>checks if a user agent was provided. For anonymous usage.</p>
+
+        
+          <div class='highlight'><pre>   <span class="hljs-attribute">isUserAgent</span>: <span class="hljs-function"><span class="hljs-params">(str)</span> -&gt;</span>
+      validate.isProperString str, <span class="hljs-string">"must provide a user agent"</span>, <span class="hljs-string">"user agent must not be empty"</span>
+      <span class="hljs-literal">true</span></pre></div>
+        
+      
+        
+        <p>checks if the http method exists</p>
+
+        
+          <div class='highlight'><pre>   <span class="hljs-attribute">isHTTPMethod</span>: <span class="hljs-function"><span class="hljs-params">(m)</span> -&gt;</span>
+      <span class="hljs-keyword">if</span> m.toLowerCase() <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> [<span class="hljs-string">"get"</span>, <span class="hljs-string">"post"</span>, <span class="hljs-string">"patch"</span>, <span class="hljs-string">"put"</span>]
+         <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error <span class="hljs-string">"must be a GET, POST, PATCH or PUT request"</span>
+      <span class="hljs-literal">true</span></pre></div>
+        
+      
+        
+        <p>checks if there’s an access token</p>
+
+        
+          <div class='highlight'><pre>   <span class="hljs-attribute">hasValidAuth</span>: <span class="hljs-function"><span class="hljs-params">(auth)</span> -&gt;</span>
+      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error <span class="hljs-string">"you don't have an access token"</span> <span class="hljs-keyword">if</span> <span class="hljs-string">"access_token"</span> <span class="hljs-keyword">not</span> <span class="hljs-keyword">of</span> auth
+      <span class="hljs-literal">true</span></pre></div>
+        
+      
+        
+        <p>checks if input is a string with length &gt; 0</p>
+
+        
+          <div class='highlight'><pre>   <span class="hljs-attribute">isProperString</span>: <span class="hljs-function"><span class="hljs-params">(str, msg1, msg2)</span> -&gt;</span>
+      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error msg1 <span class="hljs-keyword">if</span> <span class="hljs-keyword">typeof</span> str <span class="hljs-keyword">isnt</span> <span class="hljs-string">'string'</span>
+      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error msg2 <span class="hljs-keyword">if</span> str.length <span class="hljs-keyword">is</span> <span class="hljs-number">0</span>
+      <span class="hljs-literal">true</span>
+
+<span class="hljs-built_in">module</span>.exports = validate</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>jaraw.iced</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          <h1>jaraw.iced</h1>
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="index.html">
+                    index.md
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="jaraw.html">
+                    jaraw.iced
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="validate.html">
+                    validate.iced
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        <p>The only real dependency.</p>
+
+        
+          <div class='highlight'><pre>request = <span class="hljs-built_in">require</span> <span class="hljs-string">'request'</span></pre></div>
+        
+      
+        
+        <p>Used for validating input.</p>
+
+        
+          <div class='highlight'><pre>val = <span class="hljs-built_in">require</span> <span class="hljs-string">'./validate'</span></pre></div>
+        
+      
+        
+        <p>Useful functions.</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-title">identity</span> = <span class="hljs-params">(x)</span> -&gt;</span> x
+<span class="hljs-function"><span class="hljs-title">map</span> = <span class="hljs-params">(f, xs)</span> -&gt;</span> (f x <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> xs)
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Jaraw</span></span></pre></div>
+        
+      
+        
+        <p>When instantiating, either provide an options object for authorized usage or a string for anonymous usage.</p>
+
+        
+          <div class='highlight'><pre>   <span class="hljs-attribute">constructor</span>: <span class="hljs-function"><span class="hljs-params">(o)</span> -&gt;</span>
+      <span class="hljs-keyword">if</span> <span class="hljs-keyword">typeof</span> o <span class="hljs-keyword">is</span> <span class="hljs-string">'object'</span>
+         val.isOptions o
+         val.hasUserAgent o
+      <span class="hljs-keyword">else</span>
+         val.isUserAgent o
+         o =
+            <span class="hljs-attribute">type</span>: <span class="hljs-string">"anon"</span>
+            <span class="hljs-attribute">user_agent</span>: o
+
+      <span class="hljs-keyword">switch</span> o.type
+         <span class="hljs-keyword">when</span> <span class="hljs-string">"script"</span> <span class="hljs-keyword">then</span> val.isScript(o)
+         <span class="hljs-keyword">when</span> <span class="hljs-string">"web"</span> <span class="hljs-keyword">then</span> val.isWebApp(o)
+         <span class="hljs-keyword">when</span> <span class="hljs-string">"installed"</span> <span class="hljs-keyword">then</span> val.isInstalledApp(o)</pre></div>
+        
+      
+        
+        <p>Sets proper rate limits according to reddit’s api access terms.</p>
+
+        
+          <div class='highlight'><pre>      <span class="hljs-keyword">if</span> <span class="hljs-string">"rate_limit"</span> <span class="hljs-keyword">not</span> <span class="hljs-keyword">of</span> o
+         o.rate_limit = <span class="hljs-number">2000</span>
+      <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> o.rate_limit &lt; <span class="hljs-number">2000</span>
+         <span class="hljs-keyword">if</span> o.type <span class="hljs-keyword">is</span> <span class="hljs-string">"anon"</span>
+            o.rate_limit = <span class="hljs-number">2000</span>
+         <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> o.rate_limit &lt; <span class="hljs-number">1000</span>
+            o.rate_limit = <span class="hljs-number">1000</span>
+
+      <span class="hljs-property">@next_call</span> = Date.now() + o.rate_limit
+      <span class="hljs-property">@options</span> = o</pre></div>
+        
+      
+        
+        <p>Routes login types.</p>
+
+        
+          <div class='highlight'><pre>   <span class="hljs-attribute">loginAs</span>: <span class="hljs-function"><span class="hljs-params">(type, cb = identity)</span> -&gt;</span>
+      <span class="hljs-keyword">switch</span> type
+         <span class="hljs-keyword">when</span> <span class="hljs-string">"script"</span> <span class="hljs-keyword">then</span> <span class="hljs-property">@loginAsScript</span> cb
+         <span class="hljs-keyword">when</span> <span class="hljs-string">"web"</span> <span class="hljs-keyword">then</span> <span class="hljs-property">@loginAsWeb</span> cb
+         <span class="hljs-keyword">when</span> <span class="hljs-string">"installed"</span> <span class="hljs-keyword">then</span> <span class="hljs-property">@loginAsInstalled</span> cb
+         <span class="hljs-keyword">else</span> <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error <span class="hljs-string">"incorrect login type"</span></pre></div>
+        
+      
+        
+        <p>Used for personal scripts, bots.</p>
+
+        
+          <div class='highlight'><pre>   <span class="hljs-attribute">loginAsScript</span>: <span class="hljs-function"><span class="hljs-params">(cb = identity)</span> -&gt;</span></pre></div>
+        
+      
+        
+        <p>get the login info</p>
+
+        
+          <div class='highlight'><pre>      login = <span class="hljs-property">@options</span>.login
+      oauth = <span class="hljs-property">@options</span>.oauth</pre></div>
+        
+      
+        
+        <p>Gets the access token.</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function">      <span class="hljs-title">requestToken</span> = <span class="hljs-params">(callback)</span> -&gt;</span>
+         opts =
+            <span class="hljs-attribute">url</span>: <span class="hljs-string">"https://ssl.reddit.com/api/v1/access_token"</span>
+            <span class="hljs-attribute">method</span>: <span class="hljs-string">"POST"</span>
+            <span class="hljs-attribute">form</span>:
+               <span class="hljs-attribute">grant_type</span>: <span class="hljs-string">'password'</span>
+               <span class="hljs-attribute">username</span>: login.username
+               <span class="hljs-attribute">password</span>: login.password
+            <span class="hljs-attribute">auth</span>:
+               <span class="hljs-attribute">user</span>: oauth.id
+               <span class="hljs-attribute">pass</span>: oauth.secret
+         await request opts, defer err, inc, res
+         callback err, res</pre></div>
+        
+      
+        
+        <p>Sets the expiration time.</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function">      <span class="hljs-title">parseTokenRes</span> = <span class="hljs-params">(res)</span> -&gt;</span>
+         res = JSON.parse res
+         res.expires_in = Date.now().valueOf() + <span class="hljs-number">1000</span>*res.expires_in
+         res</pre></div>
+        
+      
+        
+        <p>If the access token isn’t returned, it will try again in 2 seconds.</p>
+
+        
+          <div class='highlight'><pre>      await requestToken defer err, res
+      <span class="hljs-keyword">if</span> res
+         <span class="hljs-property">@auth</span> = parseTokenRes res
+      <span class="hljs-keyword">else</span>
+         <span class="hljs-built_in">console</span>.log <span class="hljs-string">"Login attempt failed, trying again in 2 seconds"</span>
+         await setTimeout defer(), <span class="hljs-number">2000</span>
+         await loginAsScript defer()
+      cb <span class="hljs-property">@auth</span></pre></div>
+        
+      
+        
+        <p>Main method for calling reddit API.</p>
+
+        
+          <div class='highlight'><pre>   <span class="hljs-attribute">call</span>: <span class="hljs-function"><span class="hljs-params">(method, endpt, params, cb)</span> -&gt;</span></pre></div>
+        
+      
+        
+        <p>Checks if we’re making too many requests at once and waits until enough time has passed.</p>
+
+        
+          <div class='highlight'><pre>      t = Date.now() - <span class="hljs-property">@next_call</span>
+      <span class="hljs-keyword">if</span> t &lt; <span class="hljs-number">0</span> <span class="hljs-keyword">then</span> await setTimeout defer(), t</pre></div>
+        
+      
+        
+        <p>Checks for a good method and authorization, if applicable.</p>
+
+        
+          <div class='highlight'><pre>      val.isHTTPMethod method
+      <span class="hljs-keyword">if</span> <span class="hljs-property">@auth</span> <span class="hljs-keyword">then</span> val.hasValidAuth <span class="hljs-property">@auth</span></pre></div>
+        
+      
+        
+        <p>If there aren’t any parameters, gives the correct value to the callback.</p>
+
+        
+          <div class='highlight'><pre>      <span class="hljs-keyword">if</span> <span class="hljs-keyword">typeof</span> params <span class="hljs-keyword">is</span> <span class="hljs-string">"function"</span>
+         cb = params
+         params = {}</pre></div>
+        
+      
+        
+        <p>If it’s a get request, put the parameters into the url and into the request body otherwise.</p>
+
+        
+          <div class='highlight'><pre>      opts =
+         <span class="hljs-keyword">if</span> method.toLowerCase() <span class="hljs-keyword">is</span> <span class="hljs-string">"get"</span>
+            <span class="hljs-attribute">qs</span>: params
+         <span class="hljs-keyword">else</span>
+            <span class="hljs-attribute">form</span>: params</pre></div>
+        
+      
+        
+        <p>Special oauth access if we’re logged in, regular-joe access if we’re not.</p>
+
+        
+          <div class='highlight'><pre>      opts.url = <span class="hljs-keyword">if</span> <span class="hljs-property">@options</span>.oauth <span class="hljs-keyword">then</span> <span class="hljs-string">"https://oauth.reddit.com"</span> <span class="hljs-keyword">else</span> <span class="hljs-string">"https://www.reddit.com"</span>
+      opts.url += endpt</pre></div>
+        
+      
+        
+        <p>Sets the headers and makes the actual request.</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function">      <span class="hljs-title">doCall</span> = <span class="hljs-params">(callback)</span> =&gt;</span>
+         headers =
+            <span class="hljs-string">"User-Agent"</span>: <span class="hljs-property">@options</span>.user_agent
+         <span class="hljs-keyword">if</span> <span class="hljs-property">@auth</span> <span class="hljs-keyword">then</span> headers.Authorization = <span class="hljs-string">"bearer <span class="hljs-subst">#{<span class="hljs-property">@auth</span>.access_token}</span>"</span>
+         opts.headers = headers
+         await request[method.toLowerCase()] opts, defer err, res, body
+         callback err, res, body
+
+      await doCall defer err, res, body</pre></div>
+        
+      
+        
+        <p>If our access token has expired, we’ll renew it.</p>
+
+        
+          <div class='highlight'><pre>      <span class="hljs-keyword">if</span> res?.statusCode <span class="hljs-keyword">in</span> [<span class="hljs-number">401</span>, <span class="hljs-number">403</span>]
+         await <span class="hljs-property">@loginAs</span> <span class="hljs-property">@options</span>.type, defer auth
+         await doCall defer err, res, body
+         <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> err <span class="hljs-keyword">then</span> <span class="hljs-property">@next_call</span> = Date.now() + <span class="hljs-property">@options</span>.rate_limit
+
+      cb err, res, body</pre></div>
+        
+      
+        
+        <p>Used for GET endpoints.</p>
+
+        
+          <div class='highlight'><pre>   <span class="hljs-attribute">get</span>: <span class="hljs-function"><span class="hljs-params">(endpt, params = {}, cb = identity)</span> -&gt;</span> <span class="hljs-property">@call</span>(<span class="hljs-string">"get"</span>, endpt, params, cb)</pre></div>
+        
+      
+        
+        <p>Used for POST endpoints.</p>
+
+        
+          <div class='highlight'><pre>   <span class="hljs-attribute">post</span>: <span class="hljs-function"><span class="hljs-params">(endpt, params = {}, cb = identity)</span> -&gt;</span> <span class="hljs-property">@call</span>(<span class="hljs-string">"post"</span>, endpt, params, cb)</pre></div>
+        
+      
+        
+        <p>Shortcut for responses that return <a href="https://www.reddit.com/dev/api#section_listings">listings</a>.</p>
+
+        
+          <div class='highlight'><pre>   <span class="hljs-attribute">getListing</span>: <span class="hljs-function"><span class="hljs-params">(endpt, params = {}, cb = identity)</span> -&gt;</span>
+<span class="hljs-function">      <span class="hljs-title">simplifyListing</span> = <span class="hljs-params">(x)</span> -&gt;</span> map (<span class="hljs-function"><span class="hljs-params">(y)</span> -&gt;</span> y.data), JSON.parse(x).data.children
+
+      await <span class="hljs-property">@get</span> endpt, params, defer err, res, bod
+      cb err, res, simplifyListing bod</pre></div>
+        
+      
+        
+        <p>Sends <code>recipient</code> a PM with subject <code>subj</code> and body <code>msg</code>.</p>
+
+        
+          <div class='highlight'><pre>   <span class="hljs-attribute">pm</span>: <span class="hljs-function"><span class="hljs-params">(recipient, subj, msg, cb = identity)</span> -&gt;</span>
+      <span class="hljs-keyword">if</span> <span class="hljs-regexp">/\/u\//i</span>.test recipient <span class="hljs-keyword">then</span> recipient = recipient[<span class="hljs-number">3.</span>.]
+
+      params =
+         <span class="hljs-attribute">api_type</span>: <span class="hljs-string">'json'</span>
+         <span class="hljs-attribute">subject</span>: subj
+         <span class="hljs-attribute">text</span>: msg
+         <span class="hljs-attribute">to</span>: recipient
+
+      <span class="hljs-property">@post</span> <span class="hljs-string">'api/compose'</span>, params, cb</pre></div>
+        
+      
+        
+        <p>Replies to the <a href="https://www.reddit.com/dev/api#fullnames">fullname</a> of a thing with text <code>msg</code>.
+<code>dest</code> can either be the fullname of a private message, a link, or a comment.</p>
+
+        
+          <div class='highlight'><pre>   <span class="hljs-attribute">replyTo</span>: <span class="hljs-function"><span class="hljs-params">(dest, msg, cb = identity)</span> -&gt;</span>
+
+      params =
+         <span class="hljs-attribute">api_type</span>: <span class="hljs-string">'json'</span>
+         <span class="hljs-attribute">thing_id</span>: dest
+         <span class="hljs-attribute">text</span>: msg
+
+      <span class="hljs-property">@post</span> <span class="hljs-string">'/api/comment'</span>, params, cb</pre></div>
+        
+      
+        
+        <p>Destroys the access token.
+<strong>Warning</strong>: If you’re using this as a bot/personal script, you don’t get a refresh token.
+To get around this, jaraw will log-in again any time it detects an invalid access token.
+Therefore, you might call <code>logout</code>, then query the reddit API for oauth-only info,
+and still get a response.</p>
+
+        
+          <div class='highlight'><pre>   <span class="hljs-attribute">logout</span>: <span class="hljs-function"><span class="hljs-params">(cb = identity)</span> -&gt;</span>
+      opts =
+         <span class="hljs-attribute">url</span>: <span class="hljs-string">"https://ssl.reddit.com/api/v1/revoke_token"</span>
+         <span class="hljs-attribute">method</span>: <span class="hljs-string">"POST"</span>
+         <span class="hljs-attribute">auth</span>:
+            <span class="hljs-attribute">user</span>: <span class="hljs-property">@options</span>.oauth.id
+            <span class="hljs-attribute">pass</span>: <span class="hljs-property">@options</span>.oauth.secret
+         <span class="hljs-attribute">form</span>:
+            <span class="hljs-attribute">token</span>: <span class="hljs-property">@auth</span>.access_token
+            <span class="hljs-attribute">token_type_hint</span>: <span class="hljs-string">"access_token"</span>
+      await request opts, defer err, res, inc
+      <span class="hljs-built_in">console</span>.log <span class="hljs-string">"Logged out!"</span>
+      cb err, res, inc
+
+<span class="hljs-built_in">module</span>.exports = Jaraw</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>
