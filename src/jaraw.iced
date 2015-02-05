@@ -1,16 +1,15 @@
-# The only real dependency
+# The only real dependency.
 request = require 'request'
-# used for validating input
+# Used for validating input.
 val = require './validate'
 
-# Useful functions
+# Useful functions.
 identity = (x) -> x
 map = (f, xs) -> (f x for x in xs)
 
-# the real deal
 class Jaraw
 
-   # when instantiating, either provide an options object for authorized usage or a string for anonymous usage.
+   # When instantiating, either provide an options object for authorized usage or a string for anonymous usage.
    constructor: (o) ->
       if typeof o is 'object'
          val.isOptions o
@@ -26,7 +25,7 @@ class Jaraw
          when "web" then val.isWebApp(o)
          when "installed" then val.isInstalledApp(o)
 
-      # sets proper rate limits according to reddit's api access terms
+      # Sets proper rate limits according to reddit's api access terms.
       if "rate_limit" not of o
          o.rate_limit = 2000
       else if o.rate_limit < 2000
@@ -38,7 +37,7 @@ class Jaraw
       @next_call = Date.now() + o.rate_limit
       @options = o
 
-   # routes login types
+   # Routes login types.
    loginAs: (type, cb = identity) ->
       switch type
          when "script" then @loginAsScript cb
@@ -46,13 +45,13 @@ class Jaraw
          when "installed" then @loginAsInstalled cb
          else throw new Error "incorrect login type"
 
-   # used for personal scripts, bots
+   # Used for personal scripts, bots.
    loginAsScript: (cb = identity) ->
       # get the login info
       login = @options.login
       oauth = @options.oauth
 
-      # gets the access token
+      # Gets the access token.
       requestToken = (callback) ->
          opts =
             url: "https://ssl.reddit.com/api/v1/access_token"
@@ -67,13 +66,13 @@ class Jaraw
          await request opts, defer err, inc, res
          callback err, res
 
-      # sets the expiration time
+      # Sets the expiration time.
       parseTokenRes = (res) ->
          res = JSON.parse res
          res.expires_in = Date.now().valueOf() + 1000*res.expires_in
          res
 
-      # if the access token isn't returned, it will try again in 2 seconds
+      # If the access token isn't returned, it will try again in 2 seconds.
       await requestToken defer err, res
       if res
          @auth = parseTokenRes res
@@ -83,31 +82,31 @@ class Jaraw
          await loginAsScript defer()
       cb @auth
 
-   # main method for calling reddit API
+   # Main method for calling reddit API.
    call: (method, endpt, params, cb) ->
-      # checks if we're making too many requests at once and waits until enough time has passed
+      # Checks if we're making too many requests at once and waits until enough time has passed.
       t = Date.now() - @next_call
       if t < 0 then await setTimeout defer(), t
-      # checks for a good method and authorization, if applicable
+      # Checks for a good method and authorization, if applicable.
       val.isHTTPMethod method
       if @auth then val.hasValidAuth @auth
-      # if there aren't any parameters, gives the correct value to the callback
+      # If there aren't any parameters, gives the correct value to the callback.
       if typeof params is "function"
          cb = params
          params = {}
 
-      # if it's a get request, put the parameters into the url and into the request body otherwise
+      # If it's a get request, put the parameters into the url and into the request body otherwise.
       opts =
          if method.toLowerCase() is "get"
             qs: params
          else
             form: params
 
-      # special oauth access if we're logged in, regular-joe access if we're not
+      # Special oauth access if we're logged in, regular-joe access if we're not.
       opts.url = if @options.oauth then "https://oauth.reddit.com" else "https://www.reddit.com"
       opts.url += endpt
 
-      # sets the headers and makes the actual request
+      # Sets the headers and makes the actual request.
       doCall = (callback) =>
          headers =
             "User-Agent": @options.user_agent
@@ -118,7 +117,7 @@ class Jaraw
 
       await doCall defer err, res, body
 
-      # if our access token has expired, we'll renew it
+      # If our access token has expired, we'll renew it.
       if res?.statusCode in [401, 403]
          await @loginAs @options.type, defer auth
          await doCall defer err, res, body
@@ -126,23 +125,23 @@ class Jaraw
 
       cb err, res, body
 
-   # used for GET endpoints
+   # Used for GET endpoints.
    get: (endpt, params = {}, cb = identity) -> @call("get", endpt, params, cb)
 
-   # used for POST endpoints
+   # Used for POST endpoints.
    post: (endpt, params = {}, cb = identity) -> @call("post", endpt, params, cb)
 
-   # shortcut for responses that return [listings](https://www.reddit.com/dev/api#section_listings)
+   # Shortcut for responses that return [listings](https://www.reddit.com/dev/api#section_listings).
    getListing: (endpt, params = {}, cb = identity) ->
       simplifyListing = (x) -> map ((y) -> y.data), JSON.parse(x).data.children
 
       await @get endpt, params, defer err, res, bod
       cb err, res, simplifyListing bod
 
-   # sends `recipient` a PM with subject `subj` and body `msg`
+   # Sends `recipient` a PM with subject `subj` and body `msg`.
    pm: (recipient, subj, msg, cb = identity) ->
       if /\/u\//i.test recipient then recipient = recipient[3..]
-      
+
       params =
          api_type: 'json'
          subject: subj
@@ -151,7 +150,8 @@ class Jaraw
 
       @post 'api/compose', params, cb
 
-   # replies to the [fullname](https://www.reddit.com/dev/api#fullnames) of a thing with text `msg`. `dest` can either be the fullname of a private message, a link, or a comment.
+   # Replies to the [fullname](https://www.reddit.com/dev/api#fullnames) of a thing with text `msg`.
+   # `dest` can either be the fullname of a private message, a link, or a comment.
    replyTo: (dest, msg, cb = identity) ->
 
       params =
@@ -161,7 +161,11 @@ class Jaraw
 
       @post '/api/comment', params, cb
 
-   # destroys the access token
+   # Destroys the access token.
+   # **Warning**: If you're using this as a bot/personal script, you don't get a refresh token.
+   # To get around this, jaraw will log-in again any time it detects an invalid access token.
+   # Therefore, you might call `logout`, then query the reddit API for oauth-only info,
+   # and still get a response.
    logout: (cb = identity) ->
       opts =
          url: "https://ssl.reddit.com/api/v1/revoke_token"
@@ -176,5 +180,4 @@ class Jaraw
       console.log "Logged out!"
       cb err, res, inc
 
-# the real deal
 module.exports = Jaraw
