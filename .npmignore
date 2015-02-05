@@ -4,3 +4,4 @@ Gruntfile.coffee
 coffeelint.json
 .travis.yml
 docs/
+

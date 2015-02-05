@@ -4,6 +4,7 @@ module.exports = (grunt) ->
    grunt.loadNpmTasks 'grunt-coffeelint'
    grunt.loadNpmTasks 'grunt-iced-coffee'
    grunt.loadNpmTasks 'grunt-contrib-uglify'
+   grunt.loadNpmTasks 'grunt-gh-pages'
 
    grunt.initConfig
 
@@ -55,7 +56,13 @@ module.exports = (grunt) ->
                   ext: '.js'
                }]
 
+      'gh-pages':
+         options:
+            base: 'docs'
+         src: ['**']
+
    grunt.registerTask 'default', ['validateSrc', 'build', 'validateBuild']
    grunt.registerTask 'build', ['coffee', 'uglify']
    grunt.registerTask 'validateSrc', ['coffeelint', 'mochaTest:tests']
    grunt.registerTask 'validateBuild', ['mochaTest:built']
+   grunt.registerTask 'publicize', ['gh-pages']
