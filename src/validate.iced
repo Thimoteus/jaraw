@@ -1,4 +1,13 @@
 validate =
+   # checks if input is a string with length > 0
+   isProperString: (str, msg1, msg2) ->
+      throw new Error msg1 if typeof str isnt 'string'
+      throw new Error msg2 if str.length is 0
+      true
+   isProperArray: (arr) ->
+      throw new Error "must provide an array" if not (typeof arr is 'object' and arr.length? and arr.push?)
+      throw new Error "must provide a nonempty array" if arr.length is 0
+      true
    # checks for the type of app
    isOptions: (o) ->
       throw new Error "type must be defined" if not o.type?
@@ -14,8 +23,16 @@ validate =
       true
    # web apps not supported yet
    isWebApp: (o) -> validate.isOptions(o)
-   # installed apps not supported yet
-   isInstalledApp: (o) -> validate.isOptions(o)
+   isInstalledApp: (o) ->
+      validate.isOptions(o)
+      throw new Error "must provide a client id" if not o.oauth?.id
+      throw new Error "must provide a redirect uri" if not o.oauth?.redirect_uri
+      throw new Error "must provide an array of scopes" if not o.oauth?.scopes
+      try
+         validate.isProperArray o.oauth.scopes
+      catch
+         throw new Error "oauth.scopes must contain at least one scope"
+      true
    # checks if a user agent was provided. For non-anonymous usage.
    hasUserAgent: (o) ->
       throw new Error "need to define a user agent" if not o.user_agent?
@@ -33,11 +50,6 @@ validate =
    # checks if there's an access token
    hasValidAuth: (auth) ->
       throw new Error "you don't have an access token" if "access_token" not of auth
-      true
-   # checks if input is a string with length > 0
-   isProperString: (str, msg1, msg2) ->
-      throw new Error msg1 if typeof str isnt 'string'
-      throw new Error msg2 if str.length is 0
       true
 
 module.exports = validate

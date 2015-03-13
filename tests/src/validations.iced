@@ -4,6 +4,31 @@ val = require '../../src/validate'
 
 describe 'val', ->
 
+   describe '.isProperString', ->
+
+      it 'should not accept non-strings', ->
+         assert.throws -> val.isProperString 5
+
+      it 'should not accept empty strings', ->
+         assert.throws -> val.isProperString ""
+
+      it 'should accept strings of length > 0', ->
+         assert.doesNotThrow -> val.isProperString 'foo'
+
+   describe '.isProperArray', ->
+
+      it 'should not accept non-arrays', ->
+         assert.throws -> val.isProperArray 5
+         assert.throws -> val.isProperArray 'foo'
+         assert.throws -> val.isProperArray {}
+         assert.throws -> val.isProperArray {a: 'foo', b: 'bar'}
+
+      it 'should not accept empty arrays', ->
+         assert.throws -> val.isProperArray []
+
+      it 'should accept arrays with elements', ->
+         assert.doesNotThrow -> val.isProperArray [1..3]
+
    describe '.isOptions', ->
 
       it 'should not accept an empty object', ->
@@ -33,6 +58,27 @@ describe 'val', ->
             secret: ""
          assert.throws (-> val.isScript o), "must provide client ID and secret"
 
+   describe '.isInstalledApp', ->
+      o =
+         type: 'installed'
+         oauth: {}
+
+      it 'should an error if missing id, redirect_uri, or scopes', ->
+         assert.throws -> val.isInstalledApp o
+         o.oauth.id = "foo"
+         assert.throws -> val.isInstalledApp o
+         o.oauth.redirect_uri = "http://localhost"
+         assert.throws -> val.isInstalledApp o
+         o.oauth.scopes = ["identity"]
+         assert.doesNotThrow -> val.isInstalledApp o
+
+      it 'should throw an error with empty scopes', ->
+         o.oauth =
+            id: "foo"
+            redirect_uri: "http://localhost"
+            scopes: []
+         assert.throws -> val.isInstalledApp o
+
    describe '.hasUserAgent', ->
 
       it 'should only accept objects with a `user_agent` property', ->
@@ -59,14 +105,3 @@ describe 'val', ->
 
       it 'shouldnt throw an error when object has an `access_token` property', ->
          assert.doesNotThrow (-> val.hasValidAuth access_token: 'sdkjafl')
-
-   describe '.isProperString', ->
-
-      it 'should not accept non-strings', ->
-         assert.throws -> val.isProperString 5
-
-      it 'should not accept empty strings', ->
-         assert.throws -> val.isProperString ""
-
-      it 'should accept strings of length > 0', ->
-         assert.doesNotThrow -> val.isProperString 'foo'

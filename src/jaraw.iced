@@ -38,11 +38,11 @@ class Jaraw
       @options = o
 
    # Routes login types.
-   loginAs: (type, cb = identity) ->
+   refreshAccess: (type, cb = identity) ->
       switch type
          when "script" then @loginAsScript cb
-         when "web" then @loginAsWeb cb
-         when "installed" then @loginAsInstalled cb
+         when "web" then @refreshWebAccess()
+         when "installed" then @refreshInstalledAccess()
          else throw new Error "incorrect login type"
 
    # Used for personal scripts, bots.
@@ -82,6 +82,27 @@ class Jaraw
          await loginAsScript defer()
       cb @auth
 
+   # Used for apps installed on a user's computer.
+   #
+   getInstalledAuthToken: (state) ->
+      # get the oauth info
+      oauth = @options.oauth
+      createRandomStr = -> (Math.random()).toString(36)[2..]
+      STATE = state or createRandomStr() + createRandomStr()
+
+      # see https://github.com/reddit/reddit/wiki/OAuth2#authorization-implicit-grant-flow
+      CLIENT_ID = oauth.id
+      URI = oauth.redirect_uri
+      SCOPES = oauth.scopes
+      SCOPE_STRING = SCOPES.join ','
+      url = "https://www.reddit.com/api/v1/authorize?
+         client_id=#{CLIENT_ID}&
+         response_type=token&
+         state=#{STATE}&
+         redirect_uri=#{URI}&
+         scope=#{SCOPE_STRING}"
+      url.split(" ").join("")
+
    # Main method for calling reddit API.
    call: (method, endpt, params, cb) ->
       # Checks if we're making too many requests at once and waits until enough time has passed.
@@ -119,11 +140,14 @@ class Jaraw
 
       # If our access token has expired, we'll renew it.
       if res?.statusCode in [401, 403]
-         await @loginAs @options.type, defer auth
+         await @refreshAccess @options.type, defer auth
          await doCall defer err, res, body
          if not err then @next_call = Date.now() + @options.rate_limit
 
-      cb err, res, body
+      if err or not res or res.statusCode isnt 200 or not body
+         cb new Error "Could not reach the reddit servers"
+
+      cb null, body
 
    # Used for GET endpoints.
    get: (endpt, params = {}, cb = identity) -> @call("get", endpt, params, cb)
@@ -135,8 +159,9 @@ class Jaraw
    getListing: (endpt, params = {}, cb = identity) ->
       simplifyListing = (x) -> map ((y) -> y.data), JSON.parse(x).data.children
 
-      await @get endpt, params, defer err, res, bod
-      cb err, res, simplifyListing bod
+      await @get endpt, params, defer err, bod
+      if err then return cb err
+      cb null, simplifyListing bod
 
    # Sends `recipient` a PM with subject `subj` and body `msg`.
    pm: (recipient, subj, msg, cb = identity) ->

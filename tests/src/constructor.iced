@@ -90,3 +90,10 @@ describe "constructor", ->
                secret: "abc"
             user_agent: "user agent"
          assert.doesNotThrow -> new Jaraw o
+
+   describe "installed login", ->
+
+      it "should have a rate_limit of no less than 1000", ->
+         o =
+            type: 'installed'
+            # TODO: finish this
