@@ -144,8 +144,10 @@ class Jaraw
          await doCall defer err, res, body
          if not err then @next_call = Date.now() + @options.rate_limit
 
-      if err or not res or res.statusCode isnt 200 or not body
+      if err or not res or not body
          cb new Error "Could not reach the reddit servers"
+      if res.statusCode isnt 200
+         cb new Error "Could not reach reddit: #{res.statusCode}"
 
       cb null, body
 

@@ -20,8 +20,8 @@ Jaraw = require '../../src/jaraw'
 describe "login", ->
    reddit = new Jaraw options
 
-   beforeEach (done) ->
-      reddit.loginAsScript -> done()
+   before (done) ->
+      reddit.loginAsScript done
 
    it "should return with auth properties", ->
       assert.property reddit, "auth"
